@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <title>WebRTC p2p data</title>
+
+      <script src="js/adapter.js" type="text/javascript"></script>
+      <script src="js/jquery-2.0.0.js" type="text/javascript"></script>
+      <script src="js/bootstrap.js" type="text/javascript"></script>
+      <script src='js/firebase.js' type="text/javascript"></script>
+
+      <link href="css/bootstrap.css" rel="stylesheet">
+      <link href="css/bootstrap-responsive.css" rel="stylesheet">
+      <style type="text/css">
+        .hidden {display: none;}
+      </style>
+  </head>
+
+  <body style="margin: 0 auto; width: 800px;">
+
+    <div class="header">
+      <h2>Connect <span class="pull-right" id="me-id" style="font-size: 0.5em;"></span></h2>
+    </div>
+
+    <div id="menu">
+      <div id="login">
+        <form onSubmit="return Connect.login()" class="inline">
+          <input type="text" placeholder="Enter your ID" name="me" id="me" class="form-control" style="margin-bottom: 0;"/>
+          <input type="submit" class="btn btn-success" value="Login" />
+        </form>
+      </div>
+
+      <div id="chat" class="hidden">
+        <form onSubmit="return Connect.chat()" class="inline">
+          <input type="text" placeholder="Enter token" name="token" id="token" class="form-control" style="margin-bottom: 0;"/>
+          <input type="submit" class="btn btn-success" value="Chat" />
+          <button class="btn btn-default" onClick="return Connect.videoChat()" >Video Chat</button>
+        </form>
+      </div>
+
+      <div id="connecting" class="hidden">
+        <h3>Connecting ... please wait</h4>
+      </div>
+
+      <div id="on-call" class="hidden">
+        <button class="btn btn-danger pull-right" onClick="return Connect.disconnect()">Disconnect</button>
+        <h3 id="peer"></h3>
+        <div style="clear: both;"></div>
+
+        <div class="">
+          <fieldset class="well" style="width: 360px; float: left;">
+            <div class="text-info" id="chatlog" style="height:150px; overflow:auto;"></div>
+          </fieldset>
+          <div id="card" style="width: 370px; position: relative; float: right; border: solid 1px #ddd;">
+            <div id="remote">
+              <canvas id="remoteCanvas" style="display: none;"></canvas>
+              <video id="remote_video" autoplay="autoplay" style="width: 100%;"></video>
+              <div id="mini" style="position: absolute; bottom: 0; right: 0; width: 125px;">
+                <video id="local_video" autoplay="autoplay" muted style="width: 100%;"></video>
+              </div>
+            </div>
+          </div>
+          <form class="form-inline" onSubmit="return Connect.sendMessage()" action="">
+            <input type="text" id="messageTextBox" placeholder="Type your message here" style="width: 660px;">
+            <button type="submit" id="sendMessageBtn" class="btn btn-success">Send message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!--<script src="js/serverless-webrtc.js"></script>
+    <!--<script src="js/file-transfer.js"></script>-->
+
+    <script src="js/jquery.cookie.js"></script>
+    <script src="js/google-oauth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/firebase-io.js"></script>
+    <script src="js/webrtc-io.js"></script>
+    <script src="js/p2p-io.js"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+        // GoogleOAuth object
+        var gauth = new GoogleOAuth(
+          'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email', 
+          '935545233520-2fpt6am5n4n5229b2c8kd35la1gb95bh.apps.googleusercontent.com',
+          'http://127.0.0.1/'
+        );
+
+        // FB object
+        var FB = new FirebaseIO("https://blistering-inferno-2587.firebaseio.com/calls");
+
+        // Connect global object
+        window.Connect = new P2PIO(FB, {
+          'iceServers':[
+            {url:'stun:23.21.150.121'},
+            {url: "stun:stun.l.google.com:19302"},
+            {url: "turn:numb.viagenie.ca", credential: "webrtcdemo", username: "louis%40mozilla.com"}
+          ]
+        }, {
+          'optional': [{'DtlsSrtpKeyAgreement': true}]
+        }, 50000);
+
+        // validate google else ask id
+        gauth.validate(
+          function(user){
+            console.log(user);
+            if(user.email){
+              $('#me').val(user.email.split('.')[0]);
+              Connect.login();
+            }
+          },
+          function(e){
+            console.log('Error logging in to google');
+
+            // UI initialization
+            $('#me').focus();
+          }
+        );
+
+      });
+
+
+      function getTimestamp() {
+        var totalSec = new Date().getTime() / 1000;
+        var hours = parseInt(totalSec / 3600) % 24;
+        var minutes = parseInt(totalSec / 60) % 60;
+        var seconds = parseInt(totalSec % 60);
+
+        var result = (hours < 10 ? "0" + hours : hours) + ":" +
+                     (minutes < 10 ? "0" + minutes : minutes) + ":" +
+                     (seconds  < 10 ? "0" + seconds : seconds);
+
+        return result;
+      }
+
+      function writeToChatLog(message, message_type) {
+        document.getElementById('chatlog').innerHTML += '<p class=\"' + message_type + '\">' + "[" + getTimestamp() + "] " + message + '</p>';
+      }
+    </script>
+  </body>
+</html>
