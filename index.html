@@ -82,11 +82,11 @@
       $(document).ready(function(){
 
         // GoogleOAuth object
-        var gauth = new GoogleOAuth(
-          'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email', 
-          '935545233520-2fpt6am5n4n5229b2c8kd35la1gb95bh.apps.googleusercontent.com',
-          'http://127.0.0.1/'
-        );
+        // var gauth = new GoogleOAuth(
+        //   'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email', 
+        //   '935545233520-2fpt6am5n4n5229b2c8kd35la1gb95bh.apps.googleusercontent.com',
+        //   'http://127.0.0.1/'
+        // );
 
         // FB object
         var FB = new FirebaseIO("https://blistering-inferno-2587.firebaseio.com/calls");
@@ -103,22 +103,22 @@
         }, 50000);
 
         // validate google else ask id
-        gauth.validate(
-          function(user){
-            console.log(user);
-            if(user.email){
-              $('#me').val(user.email.split('.')[0]);
-              Connect.login();
-            }
-          },
-          function(e){
-            console.log('Error logging in to google');
+        // gauth.validate(
+        //   function(user){
+        //     //console.log(user);
+        //     if(user.email){
+        //       $('#me').val(user.email.split('.')[0]);
+        //       Connect.login();
+        //     }
+        //   },
+        //   function(e){
+        //     console.log('Error logging in to google');
 
-            // UI initialization
-            $('#me').focus();
-          }
-        );
-
+        //     // UI initialization
+        //     $('#me').focus();
+        //   }
+        // );
+        
       });
 
 

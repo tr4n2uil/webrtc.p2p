@@ -56,7 +56,7 @@ window.WebRTCIO = function(ice, options){
 
     waitForChannel: function(onopen, onclose, onmessage){
       pc.ondatachannel = function (e) {
-          var datachannel = e.channel || e; // Chrome sends event, FF sends raw channel
+          var datachannel = e.channel; // Chrome sends event, FF sends raw channel
           console.log("Received datachannel", arguments);
 
           dc = datachannel;
@@ -87,7 +87,7 @@ window.WebRTCIO = function(ice, options){
       console.log("Creating offer");
 
       pc.createOffer(function (desc) {
-          pc.setLocalDescription(desc, function () {});
+          pc.setLocalDescription(desc, function () {}, function(){});
           console.log("created local offer", desc);
       }, 
       function () {
